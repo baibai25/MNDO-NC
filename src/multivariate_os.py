@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 # Find zero standard deviation
 def find_zerostd(pos, num_minority): 
-    for i in tqdm(range(100), desc="Searching zero std", leave=False):
+    for _ in tqdm(range(100), desc='Searching zero std', leave=False):
         std = pos.std()
         mean = pos.mean()
         zero_list = []
@@ -17,10 +17,10 @@ def find_zerostd(pos, num_minority):
                 zero_mean.append(mean[i])
     
     if (len(zero_list) == 0) and (len(zero_mean) == 0): 
-        print("Not found zero std.")
+        print('Not found zero std.')
         df = None
     else:
-        print("Found zero std! {}".format(zero_list))
+        print('Found zero std! {}'.format(zero_list))
         df_index = np.zeros(shape=(num_minority, len(zero_list)))
         df = pd.DataFrame(df_index, columns=zero_list)
         
@@ -34,7 +34,7 @@ def find_zerostd(pos, num_minority):
 
 # Find no correlation and univariate sampling
 def no_corr(pos, num_minority):
-    for i in tqdm(range(100), desc="Searching no correlation", leave=False):
+    for _ in tqdm(range(100), desc='Searching no correlation', leave=False):
         corr = abs(pos.corr())
         nocorr_df = pd.DataFrame(index=[], columns=[]) 
         mean_list = []
@@ -52,10 +52,10 @@ def no_corr(pos, num_minority):
                 col_list.append(pos.columns[i])
     
     if (len(mean_list)==0) and (len(var_list)==0) and (len(col_list)==0): 
-        print("Not found no correlation.")
+        print('Not found no correlation.')
         df = None
     else:
-        print("Found no corr! {}".format(col_list))
+        print('Found no corr! {}'.format(col_list))
         # univariate normal dist over-sampling
         tmp = []
         np.random.seed(seed=6)
@@ -75,8 +75,8 @@ def no_corr(pos, num_minority):
 
 
 # Multivariate sampling
-def mnd_os(pos, num_minority):
-    for i in tqdm(range(100), desc="Multi normal dist over-sampling", leave=False):
+def mnd_os(pos, num_minority, zero_std, no_corr):
+    for _ in tqdm(range(100), desc='Multi normal dist over-sampling', leave=False):
         # calc correlation and covert absolute value
         corr = abs(pos.corr())
         
@@ -105,18 +105,19 @@ def mnd_os(pos, num_minority):
             tmp.append(mul_x)
         
         # convert to dataframe
-        df = pd.DataFrame(tmp).T
-        df.columns = pos.columns
+        df_mndo = pd.DataFrame(tmp).T
+        df_mndo.columns = pos.columns
+        
+        df = pd.concat([df_mndo, zero_std, no_corr], axis=1)
     
     return df
 
-def append_data(pos, zero_std, no_corr, name):
-    pos = pd.concat([pos, zero_std, no_corr], axis=1)
+# save
+def save_data(pos):
+ 
     pos['Label'] = 1
-
     os.makedirs('./pos_data', exist_ok=True)
     pos.to_csv('./pos_data/{}_mndo.csv'.format(name), index=False)
     print('Generated data is saved in ./pos_data/{}_mndo.csv'.format(name))    
 
     return pos
-
