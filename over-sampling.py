@@ -1,5 +1,6 @@
 import sys
 import os
+import copy
 import numpy as np
 import pandas as pd
 from src import multivariate_os, nominal_os
@@ -37,6 +38,7 @@ if __name__ == '__main__':
     # split positive class
     pos = data[data.Label == 1]
     pos = pos.drop('Label', axis=1)
+    positive = copy.copy(pos) # copy original data
     nominal = nominal[nominal.Label == 1]
     nominal = nominal.drop('Label', axis=1)
 
@@ -51,7 +53,7 @@ if __name__ == '__main__':
     pos_gen = mndo(pos, num_minority)
     
     # nominal over-sampling
-    key = nominal_os.distance(pos, pos_gen)
+    key = nominal_os.distance(positive, pos_gen)
     generated_data = nominal_os.nominal_os(key, nominal, pos_gen)
     nominal_os.save(generated_data, file_name)
 
