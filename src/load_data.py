@@ -51,8 +51,9 @@ if __name__ == '__main__':
 
     X_nominal, X_continuous = detect_nominal(X, y)
 
-    # save 
+    # save
     os.makedirs('./Predataset/{}'.format(sys.argv[1]), exist_ok=True)
     X_nominal.to_csv('./Predataset/{}/nominal.csv'.format(sys.argv[1]), index=False)
-    X_continuous.to_csv('./Predataset/{}/continuous.csv'.format(sys.argv[1]), index=False)
-
+    X_continuous.to_csv('./Predataset/{}/continuous.csv'.format(sys.argv[1]), index=False) 
+    data = pd.concat([X, y], axis=1)
+    data.to_csv('./Predataset/{}/data.csv'.format(sys.argv[1]), index=False)
