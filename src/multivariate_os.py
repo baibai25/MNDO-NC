@@ -107,7 +107,6 @@ def mnd_os(pos, num_minority, zero_std, no_corr):
         # convert to dataframe
         df_mndo = pd.DataFrame(tmp).T
         df_mndo.columns = pos.columns
-        
         df = pd.concat([df_mndo, zero_std, no_corr], axis=1)
     
     return df
