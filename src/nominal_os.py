@@ -47,12 +47,12 @@ def nominal_os(key, nominal, pos_gen):
         nominal_gen.append(tmp)
 
     nominal_gen = pd.DataFrame(nominal_gen)
+    nominal_gen.columns = nominal.columns 
     df = pd.concat([nominal_gen, pos_gen], axis=1)
     df['Label'] = 1
     
     return df
 
-def save(generated_data, file_name):
-    os.makedirs('./Predataset/{}'.format(file_name), exist_ok=True)
-    generated_data.to_csv('./Predataset/{}/generated.csv'.format(file_name), index=False)
-    print('Generated data is saved in ./Predataset/{}/generated.csv'.format(file_name))    
+def save(generated_data, save_path):
+    generated_data.to_csv(save_path, index=False)
+    print('Generated data is saved in {}'.format(save_path))    
