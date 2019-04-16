@@ -68,7 +68,7 @@ def no_corr(pos, num_minority):
         df.columns = col_list
         
         # drop no correlation attributes
-        for  i in range(len(col_list)):
+        for i in range(len(col_list)):
             pos.drop(col_list[i], axis=1, inplace=True)
 
     return pos, df
@@ -99,7 +99,7 @@ def mnd_os(pos, num_minority, zero_std, no_corr):
             
         # generate new sample
         tmp = []
-        np.random.seed(seed=6)
+        np.random.seed(seed=42)
         for mean, cov in zip(mean_list, cov_list):
             mul_x, mul_y = np.random.multivariate_normal(mean, cov, num_minority).T
             tmp.append(mul_x)
