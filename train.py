@@ -41,6 +41,11 @@ if __name__ == '__main__':
     except FileNotFoundError:
         sys.exit('error: No such file or directory')
 
+    data = pd.get_dummies(data)   
+
+    # sort columns
+    mndo_generated = mndo_generated.ix[:, data.columns]
+
     # split the data
     X = data.drop('Label', axis=1)
     y = data.Label
@@ -69,7 +74,8 @@ if __name__ == '__main__':
     # Multivariate over-sampling
     X_mndo, y_mndo = append_mndo(X_train, y_train, mndo_generated)
     print('y_mndo: {}'.format(Counter(y_mndo)))
-    
+
+
     for i in tqdm(range(100), desc="Preprocessing", leave=False):
         # Apply over-sampling
         sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE)
@@ -123,7 +129,7 @@ if __name__ == '__main__':
         pred_tmp.append(predict_data.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
 
     #k-NN
-    k=3
+    k=5
     knn_clf = []
     for i in range(len(os_list)):
         knn_clf.append(KNeighborsClassifier(n_neighbors=k).fit(os_list[i][0], os_list[i][1]))
