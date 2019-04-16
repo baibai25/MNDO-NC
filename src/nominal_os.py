@@ -48,7 +48,7 @@ def nominal_os(key, nominal, pos_gen):
 
     nominal_gen = pd.DataFrame(nominal_gen)
     nominal_gen.columns = nominal.columns 
-    df = pd.concat([nominal_gen, pos_gen], axis=1)
+    df = pd.concat([pos_gen, nominal_gen], axis=1)
     df['Label'] = 1
     
     return df
