@@ -1,9 +1,13 @@
 #!/bin/sh
-path=Predataset/
+data=Predataset/
+gen=generated/
 
 for file in `ls Predataset/`
 do
-    argv=$path$file
+    argv_data=$data$file
+    argv_gen=$gen$file
     echo $file
-    python train.py $argv
+    #echo $argv_data $argv_gen
+    
+    python train.py $argv_data $argv_gen
 done
