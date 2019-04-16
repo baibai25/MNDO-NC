@@ -19,7 +19,7 @@ def mndo(pos, num_minority):
     pos, zero_std = multivariate_os.find_zerostd(pos, num_minority)
     pos, no_corr = multivariate_os.no_corr(pos, num_minority)
     pos = multivariate_os.mnd_os(pos, num_minority, zero_std, no_corr)
-    
+
     return pos
 
 if __name__ == '__main__':
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     
     # over-sampling
     pos_gen = mndo(pos, num_minority)
-    
+ 
     # nominal over-sampling
     key = nominal_os.distance(positive, pos_gen)
     generated_data = nominal_os.nominal_os(key, nominal, pos_gen)
