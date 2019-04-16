@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # calc number of  samples to synthesize
     RANDOM_STATE=42
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4,
             shuffle=True, random_state=RANDOM_STATE)
 
     print('y_train: {}'.format(Counter(y_train)))
@@ -109,32 +109,32 @@ if __name__ == '__main__':
         fpr, tpr, thresholds = roc_curve(y_test, prob, pos_label=1)
         roc_auc_area = auc(fpr, tpr)
         pred_tmp.append(predict_data.calc_metrics(y_test, svm_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
-        """
-        # tree
-        tree_clf = []
-        for i in range(len(os_list)):
-            tree_clf.append(DecisionTreeClassifier(random_state=RANDOM_STATE).fit(os_list[i][0], os_list[i][1]))
-            
-        for i in range(len(tree_clf)):
-            # calc auc
-            prob = tree_clf[i].predict_proba(X_test_scaled[i])[:,1]
-            fpr, tpr, thresholds = roc_curve(y_test, prob, pos_label=1)
-            roc_auc_area = auc(fpr, tpr)
-            pred_tmp.append(predict_data.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
+    
+    # tree
+    tree_clf = []
+    for i in range(len(os_list)):
+        tree_clf.append(DecisionTreeClassifier(random_state=RANDOM_STATE).fit(os_list[i][0], os_list[i][1]))
+        
+    for i in range(len(tree_clf)):
+        # calc auc
+        prob = tree_clf[i].predict_proba(X_test_scaled[i])[:,1]
+        fpr, tpr, thresholds = roc_curve(y_test, prob, pos_label=1)
+        roc_auc_area = auc(fpr, tpr)
+        pred_tmp.append(predict_data.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
 
-        #k-NN
-        k=3
-        knn_clf = []
-        for i in range(len(os_list)):
-            knn_clf.append(KNeighborsClassifier(n_neighbors=k).fit(os_list[i][0], os_list[i][1]))
-            
-        for i in range(len(knn_clf)):
-            # calc auc
-            prob = knn_clf[i].predict_proba(X_test_scaled[i])[:,1]
-            fpr, tpr, thresholds = roc_curve(y_test, prob, pos_label=1)
-            roc_auc_area = auc(fpr, tpr)
-            pred_tmp.append(predict_data.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
-        """   
+    #k-NN
+    k=3
+    knn_clf = []
+    for i in range(len(os_list)):
+        knn_clf.append(KNeighborsClassifier(n_neighbors=k).fit(os_list[i][0], os_list[i][1]))
+        
+    for i in range(len(knn_clf)):
+        # calc auc
+        prob = knn_clf[i].predict_proba(X_test_scaled[i])[:,1]
+        fpr, tpr, thresholds = roc_curve(y_test, prob, pos_label=1)
+        roc_auc_area = auc(fpr, tpr)
+        pred_tmp.append(predict_data.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
+  
     pred_df = pd.DataFrame(pred_tmp)
     pred_df.columns = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC', 'AUC']
    
