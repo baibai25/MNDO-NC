@@ -3,7 +3,8 @@ import os
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
-from src import multivariate_os, predict_data, preprocessing
+import argparse
+from src import predict_data, preprocessing
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from imblearn import over_sampling
@@ -32,18 +33,22 @@ def append_mndo(X_train, y_train, df):
 
 if __name__ == '__main__':
     # Load dataset
+    parser = argparse.ArgumentParser()
+    parser.add_argument('data', help='dataset')
+    parser.add_argument('generated', help='generated data')
+    args = parser.parse_args()
+    
     try:
-        data = pd.read_csv(sys.argv[1])
-        mndo_generated = pd.read_csv(sys.argv[2])
-        save_path, file_name = set_path(os.path.basename(sys.argv[1]))
+        data = pd.read_csv(args.data)
+        mndo_generated = pd.read_csv(args.generated)
+        save_path, file_name = set_path(os.path.basename(args.data))
     except IndexError:
         sys.exit('error: Must specify dataset file')
     except FileNotFoundError:
         sys.exit('error: No such file or directory')
 
+    # one-hot encoding and sort columns
     data = pd.get_dummies(data)   
-
-    # sort columns
     mndo_generated = mndo_generated.ix[:, data.columns]
 
     # split the data
@@ -107,7 +112,8 @@ if __name__ == '__main__':
 
     #svm
     for i in range(len(os_list)):
-        svm_clf.append(svm.SVC(C=1, kernel='linear', gamma='auto', random_state=RANDOM_STATE, probability=True).fit(os_list[i][0], os_list[i][1]))
+        svm_clf.append(svm.SVC(kernel='rbf', gamma='auto',
+            random_state=RANDOM_STATE, probability=True).fit(os_list[i][0], os_list[i][1]))
         
     for i in range(len(svm_clf)):
         # calc auc
