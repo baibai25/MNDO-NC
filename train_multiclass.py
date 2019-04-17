@@ -4,7 +4,7 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import argparse
-from src import predict_data, preprocessing
+from src import predict_multiclass, preprocessing
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from imblearn import over_sampling
@@ -12,7 +12,6 @@ from imblearn import combine
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import roc_curve, auc
 
 # set save path
 def set_path(basename):
@@ -118,9 +117,7 @@ if __name__ == '__main__':
     for i in range(len(svm_clf)):
         # calc auc
         prob = svm_clf[i].predict_proba(X_test_scaled[i])[:,1]
-        fpr, tpr, thresholds = roc_curve(y_test, prob)
-        roc_auc_area = auc(fpr, tpr)
-        pred_tmp.append(predict_data.calc_metrics(y_test, svm_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
+        pred_tmp.append(predict_multiclass.calc_metrics(y_test, svm_clf[i].predict(X_test_scaled[i]), i))
     
     # tree
     tree_clf = []
@@ -130,9 +127,7 @@ if __name__ == '__main__':
     for i in range(len(tree_clf)):
         # calc auc
         prob = tree_clf[i].predict_proba(X_test_scaled[i])[:,1]
-        fpr, tpr, thresholds = roc_curve(y_test, prob)
-        roc_auc_area = auc(fpr, tpr)
-        pred_tmp.append(predict_data.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
+        pred_tmp.append(predict_multiclass.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), i))
 
     #k-NN
     k=5
@@ -143,12 +138,10 @@ if __name__ == '__main__':
     for i in range(len(knn_clf)):
         # calc auc
         prob = knn_clf[i].predict_proba(X_test_scaled[i])[:,1]
-        fpr, tpr, thresholds = roc_curve(y_test, prob)
-        roc_auc_area = auc(fpr, tpr)
-        pred_tmp.append(predict_data.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
+        pred_tmp.append(predict_multiclass.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), i))
   
     pred_df = pd.DataFrame(pred_tmp)
-    pred_df.columns = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC', 'AUC']
+    pred_df.columns = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC']
    
     # export resualt
     pred_df.to_csv(save_path, index=False)
