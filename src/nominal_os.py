@@ -31,7 +31,7 @@ def distance(pos, pos_gen):
 
 # extract nearest nominal samples
 # nominal over-sampling
-def nominal_os(key, nominal, pos_gen): 
+def nominal_os(key, nominal, pos_gen, pos_label): 
     # extract nearest nominal samples
     nominal_gen = []
     for i in range(key.shape[0]):
@@ -49,7 +49,7 @@ def nominal_os(key, nominal, pos_gen):
     nominal_gen = pd.DataFrame(nominal_gen)
     nominal_gen.columns = nominal.columns 
     df = pd.concat([pos_gen, nominal_gen], axis=1)
-    df['Label'] = 1
+    df['Label'] = pos_label
     
     return df
 
