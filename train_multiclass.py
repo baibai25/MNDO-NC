@@ -64,13 +64,6 @@ if __name__ == '__main__':
     print('y_train: {}'.format(Counter(y_train)))
     print('y_test: {}'.format(Counter(y_test)))
 
-    # SMOTE k-NN error handling
-    """
-    if cnt[1] < 6:
-        print("Can't apply SMOTE. Positive class samples is very small.")
-        print("See : https://github.com/scikit-learn-contrib/imbalanced-learn/issues/27")
-        sys.exit()
-    """
 
     #-----------------
     # Preprocessing
@@ -79,33 +72,15 @@ if __name__ == '__main__':
     X_mndo, y_mndo = append_mndo(X_train, y_train, mndo_generated)
     print('y_mndo: {}'.format(Counter(y_mndo)))
 
-
-    for i in tqdm(range(100), desc="Preprocessing", leave=False):
-        # Apply over-sampling
-        sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_b1 = over_sampling.SMOTE(kind='borderline1', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_b2 = over_sampling.SMOTE(kind='borderline2', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_enn = combine.SMOTEENN(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
-        sm_tomek = combine.SMOTETomek(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
-        ada = over_sampling.ADASYN(random_state=RANDOM_STATE, n_neighbors=3)
-        
-        X_reg, y_reg = sm_reg.fit_sample(X_train, y_train)
-        X_b1, y_b1 = sm_b1.fit_sample(X_train, y_train)
-        X_b2, y_b2 = sm_b2.fit_sample(X_train, y_train)
-        X_enn, y_enn = sm_enn.fit_sample(X_train, y_train)
-        X_tomek, y_tomek = sm_tomek.fit_sample(X_train, y_train)
-        X_ada, y_ada = ada.fit_sample(X_train, y_train)
-        os_list = [[X_reg, y_reg], [X_b1, y_b1], [X_b2, y_b2], [X_enn, y_enn],
-                [X_tomek, y_tomek], [X_ada, y_ada], [X_mndo, y_mndo]]
+    os_list = [[X_mndo, y_mndo]]
        
-        # scaling 
-        #os_list, X_test_scaled = preprocessing.normalization(os_list, X_test)
-        os_list, X_test_scaled = preprocessing.standardization(os_list, X_test)
+    # scaling 
+    os_list, X_test_scaled = preprocessing.normalization(os_list, X_test)
+    #os_list, X_test_scaled = preprocessing.standardization(os_list, X_test)
 
     #-------------
     # Learning
     #-------------
-    #for i in tqdm(range(100), desc="Learning", leave=False):
     svm_clf = []
     pred_tmp = []
 
@@ -115,7 +90,6 @@ if __name__ == '__main__':
             random_state=RANDOM_STATE, probability=True).fit(os_list[i][0], os_list[i][1]))
         
     for i in range(len(svm_clf)):
-        # calc auc
         prob = svm_clf[i].predict_proba(X_test_scaled[i])[:,1]
         pred_tmp.append(predict_multiclass.calc_metrics(y_test, svm_clf[i].predict(X_test_scaled[i]), i))
     
@@ -125,7 +99,6 @@ if __name__ == '__main__':
         tree_clf.append(DecisionTreeClassifier(random_state=RANDOM_STATE).fit(os_list[i][0], os_list[i][1]))
         
     for i in range(len(tree_clf)):
-        # calc auc
         prob = tree_clf[i].predict_proba(X_test_scaled[i])[:,1]
         pred_tmp.append(predict_multiclass.calc_metrics(y_test, tree_clf[i].predict(X_test_scaled[i]), i))
 
@@ -136,7 +109,6 @@ if __name__ == '__main__':
         knn_clf.append(KNeighborsClassifier(n_neighbors=k).fit(os_list[i][0], os_list[i][1]))
         
     for i in range(len(knn_clf)):
-        # calc auc
         prob = knn_clf[i].predict_proba(X_test_scaled[i])[:,1]
         pred_tmp.append(predict_multiclass.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), i))
   
