@@ -29,13 +29,13 @@ def distance(pos, pos_gen):
     return key
 
 
-# extract nearest nominal samples
-# nominal over-sampling
-def nominal_os(key, nominal, pos_gen, pos_label): 
-    # extract nearest nominal samples
-    nominal_gen = []
+# extract nearest categorical samples
+# categorical over-sampling
+def categorical_os(key, categorical, pos_gen, pos_label): 
+    # extract nearest categorical samples
+    categorical_gen = []
     for i in range(key.shape[0]):
-        tmp = [nominal.iloc[key[i][j]] for j in range(key.shape[1])]
+        tmp = [categorical.iloc[key[i][j]] for j in range(key.shape[1])]
         nn_df = pd.DataFrame(tmp)
 
         # voting
@@ -44,11 +44,11 @@ def nominal_os(key, nominal, pos_gen, pos_label):
             counter = Counter(nn_df[nn_df.columns[k]])
             value, freq = counter.most_common(1)[0]
             tmp.append(value)
-        nominal_gen.append(tmp)
+        categorical_gen.append(tmp)
 
-    nominal_gen = pd.DataFrame(nominal_gen)
-    nominal_gen.columns = nominal.columns 
-    df = pd.concat([pos_gen, nominal_gen], axis=1)
+    categorical_gen = pd.DataFrame(categorical_gen)
+    categorical_gen.columns = categorical.columns 
+    df = pd.concat([pos_gen, categorical_gen], axis=1)
     df['Label'] = pos_label
     
     return df
