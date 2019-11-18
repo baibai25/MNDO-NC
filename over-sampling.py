@@ -4,7 +4,7 @@ import argparse
 import copy
 import numpy as np
 import pandas as pd
-from src import multivariate_os, nominal_os
+from src import multivariate_os, categorical_os
 from collections import Counter
 from sklearn.model_selection import train_test_split
 
@@ -33,11 +33,11 @@ if __name__ == '__main__':
     # Load dataset
     parser = argparse.ArgumentParser()
     parser.add_argument('data', help='dataset')
-    parser.add_argument('--pos_label', type=int, default='1', help='positive class')
-    parser.add_argument('--neg_label', type=int, default='0', help='negative class')
-    parser.add_argument('--multiclass', action='store_true', help='multiclass')
+    parser.add_argument('--pos_label', type=int, default='1', help='Positive class: default=1')
+    parser.add_argument('--neg_label', type=int, default='0', help='Negative class: default=0')
+    parser.add_argument('--multiclass', action='store_true', help='Multiclass: default=False')
     parser.add_argument('--dummies', action='store_true',
-            help='If the nominal data has already been preprocessed')
+            help='If the categorical data has already been preprocessed: default=False')
     args = parser.parse_args()
     
     try:
@@ -49,14 +49,12 @@ if __name__ == '__main__':
             save_path, file_name = set_multiclass_path(os.path.basename(args.data), pos_label)
         elif args.multiclass == False:
             save_path, file_name = set_path(os.path.basename(args.data))
-        #data = pd.read_csv('Predataset/{}/continuous.csv'.format(sys.argv[1]))
-        #nominal = pd.read_csv('Predataset/{}/nominal.csv'.format(sys.argv[1]))
     except IndexError:
         sys.exit('error: Must specify dataset file')
     except FileNotFoundError:
         sys.exit('error: No such file or directory')
 
-    # split nominal data
+    # split categorical data
     """
     contraceptive: ['a5', 'a6', 'a9']
     thyroid:
@@ -65,21 +63,17 @@ if __name__ == '__main__':
     'Sintoma12', 'Sintoma13', 'Sintoma14', 'Sintoma15', 'Sintoma16']
     """
     if args.dummies == True:
-        categorical = [
-                'Sintoma2', 'Sintoma3', 'Sintoma4', 'Sintoma5', 'Sintoma6',
-                'Sintoma7', 'Sintoma8', 'Sintoma9', 'Sintoma10', 'Sintoma11',
-                'Sintoma12', 'Sintoma13', 'Sintoma14', 'Sintoma15', 'Sintoma16'
-                ] 
-        nominal = data[categorical]
-        nominal = pd.concat([nominal, data['Label']], axis=1)
-        data = data.drop(categorical, axis=1)
+        attribute = [] 
+        categorical = data[attribute]
+        categorical = pd.concat([categorical, data['Label']], axis=1)
+        data = data.drop(attribute, axis=1)
 
     elif args.dummies == False:
-        categorical = [data.columns[i] for i in range(data.shape[1]) if data.dtypes[i] == 'object']
-        nominal = data[categorical]
-        nominal = pd.get_dummies(nominal)
-        nominal = pd.concat([nominal, data['Label']], axis=1)
-        data = data.drop(categorical, axis=1)
+        attribute = [data.columns[i] for i in range(data.shape[1]) if data.dtypes[i] == 'object']
+        categorical = data[attribute]
+        categorical = pd.get_dummies(categorical)
+        categorical = pd.concat([categorical, data['Label']], axis=1)
+        data = data.drop(attribute, axis=1)
 
     # split the data
     X = data.drop('Label', axis=1)
@@ -91,8 +85,8 @@ if __name__ == '__main__':
     pos = data[data.Label == pos_label]
     pos = pos.drop('Label', axis=1)
     positive = copy.copy(pos) # copy original data
-    nominal = nominal[nominal.Label == pos_label]
-    nominal = nominal.drop('Label', axis=1)
+    categorical = categorical[categorical.Label == pos_label]
+    categorical = categorical.drop('Label', axis=1)
 
     # calc number of  samples to synthesize
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4,
@@ -104,7 +98,7 @@ if __name__ == '__main__':
     # over-sampling
     pos_gen = mndo(pos, num_minority)
  
-    # nominal over-sampling
-    key = nominal_os.distance(positive, pos_gen)
-    generated_data = nominal_os.nominal_os(key, nominal, pos_gen, pos_label)
-    nominal_os.save(generated_data, save_path)
+    # categorical over-sampling
+    key = categorical_os.distance(positive, pos_gen)
+    generated_data = categorical_os.categorical_os(key, categorical, pos_gen, pos_label)
+    categorical_os.save(generated_data, save_path)
