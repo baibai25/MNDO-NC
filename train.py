@@ -83,12 +83,12 @@ if __name__ == '__main__':
 
     for i in tqdm(range(100), desc="Preprocessing", leave=False):
         # Apply over-sampling
-        sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE)
-        sm_b1 = over_sampling.SMOTE(kind='borderline1', random_state=RANDOM_STATE)
-        sm_b2 = over_sampling.SMOTE(kind='borderline2', random_state=RANDOM_STATE)
-        sm_enn = combine.SMOTEENN(random_state=RANDOM_STATE)
-        sm_tomek = combine.SMOTETomek(random_state=RANDOM_STATE)
-        ada = over_sampling.ADASYN(random_state=RANDOM_STATE)
+        sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE, k_neighbors=3)
+        sm_b1 = over_sampling.SMOTE(kind='borderline1', random_state=RANDOM_STATE, k_neighbors=3)
+        sm_b2 = over_sampling.SMOTE(kind='borderline2', random_state=RANDOM_STATE, k_neighbors=3)
+        sm_enn = combine.SMOTEENN(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
+        sm_tomek = combine.SMOTETomek(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
+        ada = over_sampling.ADASYN(random_state=RANDOM_STATE, n_neighbors=3)
         
         X_reg, y_reg = sm_reg.fit_sample(X_train, y_train)
         X_b1, y_b1 = sm_b1.fit_sample(X_train, y_train)
