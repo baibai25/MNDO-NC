@@ -26,9 +26,9 @@ if __name__ == '__main__':
     
     # aggregate predict results
     name = get_name(files)
-    ind = ['sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd']
-    col = ['os', 'Sensitivity', 'Specificity', 'G-mean', 'F-1', 'MCC', 'AUC'] 
-
+    ind = ['origin', 'sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd']
+    col = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC', 'AUC'] 
+    
     for i in range(len(ind)):
         svm = pd.DataFrame(index=[], columns=col)
         tree = pd.DataFrame(index=[], columns=col)
@@ -38,12 +38,14 @@ if __name__ == '__main__':
             data = pd.read_csv(files[j])
             a = data[data['os'] == ind[i]]
 
-            svm = pd.concat([svm, a.iloc[[0]]], ignore_index=True)
-            tree = pd.concat([tree, a.iloc[[1]]], ignore_index=True)
-            knn = pd.concat([knn, a.iloc[[2]]], ignore_index=True)
+            svm = pd.concat([svm, a.iloc[[0]]], ignore_index=True, sort=False)
+            tree = pd.concat([tree, a.iloc[[1]]], ignore_index=True, sort=False)
+            knn = pd.concat([knn, a.iloc[[2]]], ignore_index=True, sort=False)
         
         df = pd.concat([svm, tree, knn], axis=1)
         df.index = name
         df.drop('os', axis=1, inplace=True)
         path = 'result/data/{}.csv'.format(ind[i])
         df.to_csv(path)
+
+   
