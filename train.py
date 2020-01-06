@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # one-hot encoding and sort columns
     data = pd.get_dummies(data)   
-    mndo_generated = mndo_generated.ix[:, data.columns]
+    mndo_generated = mndo_generated.loc[:, data.columns]
 
     # split the data
     X = data.drop('Label', axis=1)
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         X_enn, y_enn = sm_enn.fit_sample(X_train, y_train)
         X_tomek, y_tomek = sm_tomek.fit_sample(X_train, y_train)
         X_ada, y_ada = ada.fit_sample(X_train, y_train)
-        os_list = [[X_reg, y_reg], [X_b1, y_b1], [X_b2, y_b2], [X_enn, y_enn],
+        os_list = [[X_train, y_train], [X_reg, y_reg], [X_b1, y_b1], [X_b2, y_b2], [X_enn, y_enn],
                 [X_tomek, y_tomek], [X_ada, y_ada], [X_mndo, y_mndo]]
        
         # scaling 
@@ -152,3 +152,4 @@ if __name__ == '__main__':
    
     # export resualt
     pred_df.to_csv(save_path, index=False)
+
