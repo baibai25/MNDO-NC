@@ -83,12 +83,12 @@ if __name__ == '__main__':
 
     for i in tqdm(range(100), desc="Preprocessing", leave=False):
         # Apply over-sampling
-        sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_b1 = over_sampling.SMOTE(kind='borderline1', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_b2 = over_sampling.SMOTE(kind='borderline2', random_state=RANDOM_STATE, k_neighbors=3)
-        sm_enn = combine.SMOTEENN(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
-        sm_tomek = combine.SMOTETomek(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=3))
-        ada = over_sampling.ADASYN(random_state=RANDOM_STATE, n_neighbors=3)
+        sm_reg = over_sampling.SMOTE(kind='regular', random_state=RANDOM_STATE, k_neighbors=5)
+        sm_b1 = over_sampling.SMOTE(kind='borderline1', random_state=RANDOM_STATE, k_neighbors=5)
+        sm_b2 = over_sampling.SMOTE(kind='borderline2', random_state=RANDOM_STATE, k_neighbors=5)
+        sm_enn = combine.SMOTEENN(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=5))
+        sm_tomek = combine.SMOTETomek(random_state=RANDOM_STATE, smote=over_sampling.SMOTE(k_neighbors=5))
+        ada = over_sampling.ADASYN(random_state=RANDOM_STATE, n_neighbors=5)
         
         X_reg, y_reg = sm_reg.fit_sample(X_train, y_train)
         X_b1, y_b1 = sm_b1.fit_sample(X_train, y_train)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
         pred_tmp.append(predict_data.calc_metrics(y_test, knn_clf[i].predict(X_test_scaled[i]), roc_auc_area, i))
   
     pred_df = pd.DataFrame(pred_tmp)
-    pred_df.columns = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC', 'AUC']
+    pred_df.columns = ['os', 'Sensitivity', 'Specificity', 'G-mean', 'F-1', 'MCC', 'AUC']
    
     # export resualt
     pred_df.to_csv(save_path, index=False)

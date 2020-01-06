@@ -26,8 +26,8 @@ if __name__ == '__main__':
     
     # aggregate predict results
     name = get_name(files)
-    ind = ['origin', 'sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd']
-    col = ['os', 'Sensitivity', 'Specificity', 'Geometric mean', 'F-1', 'MCC', 'AUC'] 
+    ind = ['original', 'sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd']
+    col = ['os', 'Sensitivity', 'Specificity', 'G-mean', 'F-1', 'MCC', 'AUC'] 
     
     for i in range(len(ind)):
         svm = pd.DataFrame(index=[], columns=col)

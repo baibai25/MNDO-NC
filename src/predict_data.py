@@ -12,7 +12,7 @@ def calc_metrics(y_test, pred, auc, i):
         f1 = f1_score(y_test, pred, pos_label=1)
         mcc = matthews_corrcoef(y_test, pred)
           
-        index = ['origin', 'sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd'] 
+        index = ['original', 'sm', 'b1', 'b2', 'enn', 'tom', 'ada', 'mnd'] 
         metrics_list = [index[i], sen, spe, geo, f1, mcc, auc]
         return metrics_list
 
