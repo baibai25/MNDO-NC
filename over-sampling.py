@@ -70,10 +70,12 @@ if __name__ == '__main__':
 
     elif args.dummies == False:
         attribute = [data.columns[i] for i in range(data.shape[1]) if data.dtypes[i] == 'object']
-        categorical = data[attribute]
-        categorical = pd.get_dummies(categorical)
-        categorical = pd.concat([categorical, data['Label']], axis=1)
-        data = data.drop(attribute, axis=1)
+        
+        if attribute != []:
+            categorical = data[attribute]
+            categorical = pd.get_dummies(categorical)
+            categorical = pd.concat([categorical, data['Label']], axis=1)
+            data = data.drop(attribute, axis=1)
 
     # split the data
     X = data.drop('Label', axis=1)
@@ -85,8 +87,6 @@ if __name__ == '__main__':
     pos = data[data.Label == pos_label]
     pos = pos.drop('Label', axis=1)
     positive = copy.copy(pos) # copy original data
-    categorical = categorical[categorical.Label == pos_label]
-    categorical = categorical.drop('Label', axis=1)
 
     # calc number of  samples to synthesize
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4,
@@ -99,6 +99,16 @@ if __name__ == '__main__':
     pos_gen = mndo(pos, num_minority)
  
     # categorical over-sampling
-    key = categorical_os.distance(positive, pos_gen)
-    generated_data = categorical_os.categorical_os(key, categorical, pos_gen, pos_label)
-    categorical_os.save(generated_data, save_path)
+    if attribute != []:
+        # extract categorical features
+        categorical = categorical[categorical.Label == pos_label]
+        categorical = categorical.drop('Label', axis=1)
+        
+        # sampling
+        key = categorical_os.distance(positive, pos_gen)
+        generated_data = categorical_os.categorical_os(key, categorical, pos_gen, pos_label)
+        categorical_os.save(generated_data, save_path)
+    
+    else:
+        pos_gen['Label'] = pos_label
+        categorical_os.save(pos_gen, save_path)
